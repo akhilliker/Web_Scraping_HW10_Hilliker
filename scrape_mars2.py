@@ -6,6 +6,11 @@ from bs4 import BeautifulSoup as bs
 import time
 from splinter import Browser
 import pandas as pd
+from selenium import webdriver
+
+def sele_driver():
+        driver = webdriver.Chrome()
+        return driver
 
 def init_browser():
         executable_path = {'executable_path' : '/usr/local/bin/chromedriver'}
@@ -56,7 +61,6 @@ def scrape():
         mars_weather = mars_tweet[0].find(text = True)
         mars_data["mars_weather_tweet"] = mars_weather
 
-
         # Use Pandas to Scrape Mars Facts from Web
         url4 = 'https://space-facts.com/mars/'
         tables = pd.read_html(url4)
@@ -65,7 +69,6 @@ def scrape():
         mars_html_table = mars_df.to_html()
         mars_html_table = mars_html_table.replace('\n', "")
         mars_html_table = mars_df.to_html('mars_table.html')
-        return mars_html_table
 
         # Mars Hemispheres names and links
         url5 = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
@@ -79,11 +82,8 @@ def scrape():
         hemi_urls = []
         hemi_full_url = ""
 
-        #use selenium to find links by xpath 
-        from selenium import webdriver
-        driver = webdriver.Chrome()
+        driver = sele_driver()
         driver.get('https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars')
-
 
         # These are the links to click to get to the high res photo...  not the link to the photos themselves
         # Cerberus
@@ -107,80 +107,70 @@ def scrape():
         hemi_image_titles = []
         img_urls = []
         hemisphere_image_urls = []
+
+        # Cerberus
+        browser.visit(url5)
         cere_link_click = browser.find_by_xpath("//*[@class='collapsible results']/div[1]/div/a").click()
-        time.sleep(2)
         browser.visit(cere_url)
-        time.sleep(2)
         html = browser.html
         soup6 = bs(html, 'html.parser')
-        cere_img_title = soup6.find("h2", class_="title").text.strip() 
+        cere_img_title = soup6.find("h2", class_="title").text.strip() # Give Cerberus Hemisphere Enhanced
         cere_title = cere_img_title[:-9]
         hemi_image_titles.append(cere_title)
-        driver2 = webdriver.Chrome()
-        driver2.get(cere_url)
-        for b in driver2.find_elements_by_xpath('//*[@id="wide-image"]/div/ul/li[2]/a'):
-                cere_img_url = b.get_attribute('href')
+        driver.get(cere_url)
+        for b in driver.find_elements_by_xpath('//*[@id="wide-image"]/div/img'):
+                cere_img_url = b.get_attribute('src')
                 img_urls.append(cere_img_url)
         cere_dict = {'title' : cere_title, 'img_url' : cere_img_url}
         hemisphere_image_urls.append(cere_dict)
-        back_button = browser.find_by_xpath("//*[@class='container']/div[3]/section/a").click()
 
-        # Schiaparelli (change cere containing variables to schia counterparts; advance div[i] in 1st line by 1)
+        # Schiaparelli 
+        browser.visit(url5)
         schia_link_click = browser.find_by_xpath("//*[@class='collapsible results']/div[2]/div/a").click()
-        time.sleep(2)
         browser.visit(schia_url)
-        time.sleep(2)
         html = browser.html
         soup6 = bs(html, 'html.parser')
-        schia_img_title = soup6.find("h2", class_="title").text.strip() 
+        schia_img_title = soup6.find("h2", class_="title").text.strip() # Give Cerberus Hemisphere Enhanced
         schia_title = schia_img_title[:-9]
         hemi_image_titles.append(schia_title)
-        driver2 = webdriver.Chrome()
-        driver2.get(schia_url)
-        for b in driver2.find_elements_by_xpath('//*[@id="wide-image"]/div/ul/li[2]/a'):
-                schia_img_url = b.get_attribute('href')
+        driver.get(schia_url)
+        for b in driver.find_elements_by_xpath('//*[@id="wide-image"]/div/img'):
+                schia_img_url = b.get_attribute('src')
                 img_urls.append(schia_img_url)
         schia_dict = {'title' : schia_title, 'img_url' : schia_img_url}
         hemisphere_image_urls.append(schia_dict)
-        back_button = browser.find_by_xpath("//*[@class='container']/div[3]/section/a").click()
 
-        # Syrtis Major (change schia containing variables to syr counterparts; advance div[i] in 1st line by 1)
+        # Syrtis Major 
+        browser.visit(url5)
         syr_link_click = browser.find_by_xpath("//*[@class='collapsible results']/div[3]/div/a").click()
-        time.sleep(2)
         browser.visit(syr_url)
-        time.sleep(2)
         html = browser.html
         soup6 = bs(html, 'html.parser')
-        syr_img_title = soup6.find("h2", class_="title").text.strip() 
+        syr_img_title = soup6.find("h2", class_="title").text.strip() # Give Cerberus Hemisphere Enhanced
         syr_title = syr_img_title[:-9]
         hemi_image_titles.append(syr_title)
-        driver2 = webdriver.Chrome()
-        driver2.get(syr_url)
-        for b in driver2.find_elements_by_xpath('//*[@id="wide-image"]/div/ul/li[2]/a'):
-                syr_img_url = b.get_attribute('href')
+        driver.get(syr_url)
+        for b in driver.find_elements_by_xpath('//*[@id="wide-image"]/div/img'):
+                syr_img_url = b.get_attribute('src')
                 img_urls.append(syr_img_url)
         syr_dict = {'title' : syr_title, 'img_url' : syr_img_url}
         hemisphere_image_urls.append(syr_dict)
-        back_button = browser.find_by_xpath("//*[@class='container']/div[3]/section/a").click()
 
-        # Valles Marineris (change syr containing variables to val counterparts; advance div[i] in 1st line by 1)
+        # Valles Marineris 
+        browser.visit(url5)
         val_link_click = browser.find_by_xpath("//*[@class='collapsible results']/div[4]/div/a").click()
-        time.sleep(2)
         browser.visit(val_url)
-        time.sleep(2)
         html = browser.html
         soup6 = bs(html, 'html.parser')
-        val_img_title = soup6.find("h2", class_="title").text.strip() 
+        val_img_title = soup6.find("h2", class_="title").text.strip() # Give Cerberus Hemisphere Enhanced
         val_title = val_img_title[:-9]
         hemi_image_titles.append(val_title)
-        driver2 = webdriver.Chrome()
-        driver2.get(val_url)
-        for b in driver2.find_elements_by_xpath('//*[@id="wide-image"]/div/ul/li[2]/a'):
-                val_img_url = b.get_attribute('href')
+        driver.get(val_url)
+        for b in driver.find_elements_by_xpath('//*[@id="wide-image"]/div/img'):
+                val_img_url = b.get_attribute('src')
                 img_urls.append(val_img_url)
         val_dict = {'title' : val_title, 'img_url' : val_img_url}
         hemisphere_image_urls.append(val_dict)
-        back_button = browser.find_by_xpath("//*[@class='container']/div[3]/section/a").click()
 
         # Merge this dictionary with the one with the previous scrapped info
         mars_data["hemisphere_img_url"] = hemisphere_image_urls

@@ -1,5 +1,5 @@
 # import necessary libraries
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 from flask_pymongo import PyMongo
 import scrape_mars2
 
@@ -13,7 +13,8 @@ mongo = PyMongo(app)
 # set up the route and the webscraping function
 @app.route("/")
 def home():
-    mars = mongo.db.marsDB.find()
+    mars = mongo.db.marsDB.find_one()
+    print(mars)
     return render_template("index.html", mars = mars)
 
 @app.route("/scrape")
